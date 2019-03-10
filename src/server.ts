@@ -5,14 +5,13 @@ import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as readline from 'readline';
 
-import * as apicache from 'apicache';
-const cache = apicache.middleware;
 import * as compression from 'compression';
 
-// import { DatabaseModule } from './modules';
+import * as mongodb from 'mongodb';
 
-// import {
-// } from './routes';
+const client = mongodb.MongoClient
+const dbURL = "mongodb://localhost:27017"
+let database: mongodb.MongoClient = undefined;
 
 const app = express();
 
@@ -36,12 +35,38 @@ app.get('/static/*', (req: express.Request, res: express.Response) => {
     res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
+
+// API REQUESTS
+
+app.get('/api/getCounts', (req: express.Request, res: express.Response, next: () => void) => {
+    database.db("data")
+        .collection("category_counts")
+        .find()
+        .toArray()
+        .then((categoryCounts: any[]) => {
+            res.jsonp(categoryCounts.sort((a, b) => b.count - a.count).map((c => {
+                const result = {'count': c['count'], 'category': c['category'], 'date': Date.now()}
+                return result;
+            })));
+            next()
+        }); 
+    
+});
+
 const port = process.env.REAL_TRENDS_PORT || '8080';
 app.set('port', port);
 
-const server = http.createServer(app);
-server.listen(port, () => {
-    console.log(`Application running on localhost:${port}\n`);
+client.connect(dbURL, {useNewUrlParser: true, poolSize:10 }, (err, db) => {
+    if (err) {
+        throw err;
+    } else {
+        database = db;
+        console.log("Connected to database");
+        const server = http.createServer(app);
+        server.listen(port, () => {
+            console.log(`Application running on localhost:${port}\n`);
+        });
+    }
 });
 
 // Graceful shutdown portion
