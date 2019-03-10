@@ -1,0 +1,23 @@
+:host {
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: block;
+}
+
+.container-fluid {
+    height: 100%;
+    display: block;
+
+    & > .row {
+        height: 100%;
+    }
+}
+
+#trend-chart {
+    background-color: #f1f1f6;
+}
+
+#article-feed {
+    background-color: #ffffff;
+}
