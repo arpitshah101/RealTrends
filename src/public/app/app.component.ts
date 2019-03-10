@@ -8,7 +8,7 @@ declare let $: any;
 declare let Highcharts: any;
 
 function getTop10Categories(responseData: any[]) {
-    return responseData.sort((a, b) => b.count - a.count).slice(0, 5);
+    return responseData.sort((a, b) => b.count - a.count).slice(0, 6);
 }
 
 @Component({
@@ -22,6 +22,7 @@ function getTop10Categories(responseData: any[]) {
 export class AppComponent implements OnInit {
 
     private categoryData: any[];
+    private topCategories: any[] = [];
     
     constructor(public activatedRouter: ActivatedRoute, public router: Router, public articleData: ArticleDataService) { }
     
@@ -39,6 +40,7 @@ export class AppComponent implements OnInit {
                 this.categoryData = this.categoryData.map(category => {
                     const result = {};
                     result['name'] = category.category;
+                    result['id'] = category.category;
                     result['data'] = [[category.date, category.count]];
                     return result;
                 });
@@ -54,6 +56,7 @@ export class AppComponent implements OnInit {
     generateChart() {
         const articleData = this.articleData;
         const initData = this.categoryData;
+        const topCategories = this.topCategories;
         
         // Create the chart
         const chart = Highcharts.stockChart('chart-container', {
@@ -74,14 +77,20 @@ export class AppComponent implements OnInit {
                                                 // add new series
                                                 chart.addSeries({
                                                     name: category.category,
+                                                    id: category.category,
                                                     data: [[category.date, category.count]]
                                                 }, true, true);
                                             } else {
                                                 filteredSeries[0].addPoint([category.date, category.count]);
                                             }    
+                                        } else {
+                                            let x = chart.get(category.category);
+                                            if (x) {
+                                                x.remove();
+                                            }
                                         }
                                     });
-                                    
+
                                     console.log(data);
                                 }
                                 );
@@ -121,6 +130,8 @@ export class AppComponent implements OnInit {
                 
                 series: initData
                 });
+
+        this.topCategories = chart.series;
                 
                 
             }

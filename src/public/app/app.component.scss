@@ -21,3 +21,21 @@
 #article-feed {
     background-color: #ffffff;
 }
+
+.category-tile {
+    padding: 5px;
+    margin: 5px;
+    background-color: white;
+    width: 45%;
+    margin-left: auto;
+    margin-right: auto;
+    height: 45px;
+    line-height: 40px;
+
+    .category-indicator {
+        height: 100%;
+        width: 15px;
+        display: inline;
+        float: left;
+    }
+}
