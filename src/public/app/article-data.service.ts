@@ -10,4 +10,12 @@ export class ArticleDataService {
     return this.http.get('/api/getCounts');
   }
 
+  getArticlesByCategory(category: string) {
+    return this.http.get('/api/getArticlesByCategory', {
+      params: {
+        category
+      }
+    });
+  }
+
 }

@@ -5,11 +5,23 @@
             <br>
             <h3 class="text-center">Top Categories of Articles</h3>
             <div class="row" style="text-align: center">
-                <div class="category-tile" *ngFor="let cat of topCategories | slice:0:6; let i=index">
+                <div class="category-tile" *ngFor="let cat of topCategories | slice:0:6; let i=index" (click)="selectedCity2 = cat;searchByCategory(cat.name) ">
                     <div class="category-indicator" [style.background]="cat.color"></div>{{ cat.name }}</div>
             </div>
         </div>
         <div class="col" id="article-feed">
+            <h3 class="text-center">Articles</h3>
+            <label for="categorySelect">Find articles by category:</label>
+            <p-dropdown id="categorySelect" name="categorySelect" *ngIf="topCategories?.length > 0" [options]="topCategories" [(ngModel)]="selectedCity2" optionLabel="name" (onChange)="searchByCategory($event)"></p-dropdown>
+            <br><br>
+            <ul>
+                <li class="article-tile" *ngFor="let article of articleList">
+                    <div class="category-indicator" [style.background]="selectedCity2.color">{{ selectedCity2.name }}</div>
+                    <b style="overflow: hidden;">{{ article?.headline }}</b><br>
+                    <i>{{ article?.date | date }}</i><br>
+                    <p>{{ article?.short_description }}</p>
+                </li>
+            </ul>
         </div>
     </div>
 </div>

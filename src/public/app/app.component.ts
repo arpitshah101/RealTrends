@@ -20,9 +20,11 @@ function getTop10Categories(responseData: any[]) {
     ]
 })
 export class AppComponent implements OnInit {
-
+    
     private categoryData: any[];
     private topCategories: any[] = [];
+    
+    private articleList: any[] = [];
     
     constructor(public activatedRouter: ActivatedRoute, public router: Router, public articleData: ArticleDataService) { }
     
@@ -56,7 +58,10 @@ export class AppComponent implements OnInit {
     generateChart() {
         const articleData = this.articleData;
         const initData = this.categoryData;
-        const topCategories = this.topCategories;
+
+        setInterval(function() {
+            this.topCategories = chart.series;
+        }, 250);
         
         // Create the chart
         const chart = Highcharts.stockChart('chart-container', {
@@ -69,6 +74,9 @@ export class AppComponent implements OnInit {
                         setInterval(function () {
                             articleData.getCategoryCounts().subscribe(
                                 (data: any[]) => {
+                                    initData.length = 0;
+                                    initData.push(data);
+                                    
                                     const topCats = getTop10Categories(data);
                                     data.forEach((category) => {
                                         if (topCats.indexOf(category) > -1) {
@@ -79,9 +87,9 @@ export class AppComponent implements OnInit {
                                                     name: category.category,
                                                     id: category.category,
                                                     data: [[category.date, category.count]]
-                                                }, true, true);
+                                                }, false, false);
                                             } else {
-                                                filteredSeries[0].addPoint([category.date, category.count]);
+                                                filteredSeries[0].addPoint([category.date, category.count], false, false);
                                             }    
                                         } else {
                                             let x = chart.get(category.category);
@@ -90,50 +98,65 @@ export class AppComponent implements OnInit {
                                             }
                                         }
                                     });
-
-                                    console.log(data);
+                                    chart.redraw();
                                 }
                                 );
-                            }, 500);
-                        }
+                        }, 250);
                     }
-                },
-                
-                time: {
-                    useUTC: false
-                },
-                
-                rangeSelector: {
-                    buttons: [{
-                        count: 1,
-                        type: 'minute',
-                        text: '1M'
-                    }, {
-                        count: 5,
-                        type: 'minute',
-                        text: '5M'
-                    }, {
-                        type: 'all',
-                        text: 'All'
-                    }],
-                    inputEnabled: false,
-                    selected: 2
-                },
-                
-                title: {
-                    text: 'Live Category Counts'
-                },
-                
-                exporting: {
-                    enabled: false
-                },
-                
-                series: initData
-                });
-
+                }
+            },
+            
+            time: {
+                useUTC: false
+            },
+            
+            rangeSelector: {
+                buttons: [{
+                    count: 1,
+                    type: 'minute',
+                    text: '1M'
+                }, {
+                    count: 5,
+                    type: 'minute',
+                    text: '5M'
+                }, {
+                    type: 'all',
+                    text: 'All'
+                }],
+                inputEnabled: false,
+                selected: 2
+            },
+            
+            title: {
+                text: 'Live Category Counts'
+            },
+            
+            exporting: {
+                enabled: false
+            },
+            
+            series: initData
+        });
+            
         this.topCategories = chart.series;
-                
-                
+    }
+    
+    searchByCategory(event) {
+        let categoryName = event;
+        const typeStr = "" + (typeof categoryName);
+        if (typeStr !== "string") {
+            if (!event.value.name) {
+                categoryName = event.originalEvent.toElement.textContent;
+            } else {
+                categoryName = event.value.name;
             }
         }
         
+        this.articleData.getArticlesByCategory(categoryName)
+        .subscribe(
+            (articles: any[]) => {
+                this.articleList = articles;
+            }
+        );
+    }
+}

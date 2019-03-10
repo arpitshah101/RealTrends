@@ -7,6 +7,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
+import {DropdownModule} from 'primeng/dropdown';
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -15,6 +17,7 @@ import { AppComponent } from './app.component';
         AppRoutingModule,
         BrowserAnimationsModule,
         BrowserModule,
+        DropdownModule,
         FormsModule,
         HttpModule,
         HttpClientModule

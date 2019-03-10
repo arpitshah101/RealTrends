@@ -50,8 +50,20 @@ app.get('/api/getCounts', (req: express.Request, res: express.Response, next: ()
             })));
             next()
         }); 
-    
 });
+
+app.get('/api/getArticlesByCategory', (req: express.Request, res: express.Response, next: () => void) => {
+    const category = req.query.category;
+    database.db("data")
+        .collection("articles")
+        .find({"category": category}).sort({"date": -1}).limit(10)
+        .toArray()
+        .then((articles: any[])=> {
+            res.jsonp(articles);
+            next();
+        });
+});
+
 
 const port = process.env.REAL_TRENDS_PORT || '8080';
 app.set('port', port);
@@ -84,10 +96,8 @@ if (process.platform === 'win32') {
 
 process.on('SIGINT', () => {
     console.log(`SIGINT detected!`);
-    // DatabaseModule.closeAllConnesctions()
-    //     .then(() => {
-    //         logger.info(`Gracefully shutting down the application.`);
-    //         process.exit();
-    //     });
-    process.exit()
+    database.close().then((success) => {
+        console.log("Close connections.");
+        process.exit()
+    })
 });
