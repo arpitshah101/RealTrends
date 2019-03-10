@@ -1,7 +1,9 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col" id="trend-chart">
-            <div id="chart-container" style="height: 600px; min-width: 310px"></div>
+            <div id="chart-container" style="height: 600px; min-width: 310px; margin-top: 15px;"></div>
+            <br>
+            <h3 class="text-center">Top Categories of Articles</h3>
             <div class="row" style="text-align: center">
                 <div class="category-tile" *ngFor="let cat of topCategories | slice:0:6; let i=index">
                     <div class="category-indicator" [style.background]="cat.color"></div>{{ cat.name }}</div>
